@@ -9,7 +9,7 @@
       <script src="//hangoutsapi.talkgadget.google.com/hangouts/api/hangout.js?v=0.1"></script>
       <script src="http://thebeast.hopto.org/eric/swfobject.js"></script>
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
-      <script src="http://thebeast.hopto.org/roy/metagame.js"></script>
+      <script src="http://thebeast.hopto.org/eric/metagame.js"></script>
       <div id="app_body">
         <div id="app_content"></div>
         <div id="game"></div>
