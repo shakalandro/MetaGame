@@ -163,7 +163,10 @@ function fillGameList() {
     getGames(function(games) {
         for(var i = 0; i < 10; i++){
             var game = selectGame(games);
-            $('#gamelist').append($("<li onclick=\"gapi.hangout.data.setValue('gameScores', '{}');gapi.hangout.data.setValue('game', " + JSON.stringify(game) + "); playRound('" + game + "');\" > " + game.name + " </li>").prepend($('<img>').attr('src', game.thumb)));
+            var clickfunc = "gapi.hangout.data.setValue('gameScores', '{}');";
+            clickfunc += "gapi.hangout.data.setValue('game', " + JSON.stringify(game) + ");";
+            clickfunc += "playRound(" + JSON.stringify(game) + ");";
+            $('#gamelist').append($("<li onclick=\"" + clickfunc + "\" > " + game.name + " </li>").prepend($('<img />').attr('src', game.thumb)));
         }
     });
 }
