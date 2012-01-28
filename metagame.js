@@ -197,10 +197,10 @@ function selectGame(game_options) {
     return game_options[idx];
 }
 
-function embedGame(url) {
+function embedGame(url, width, height) {
     //url = 'http://games.mochiads.com/c/g/highway-traveling/Highway.swf';
     console.log('Playing game: ', url);
-    swfobject.embedSWF(url, "game", "600", "400", "9.0.0");
+    swfobject.embedSWF(url, "game", "" + width, "" + height, "9.0.0");
     setTimeout(function() {
         console.log('rechoosing game');
         newGameButton();
