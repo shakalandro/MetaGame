@@ -39,14 +39,15 @@ function receiveScores(gameScores) {
 	    }
 	});
     if (count == gapi.hangout.getParticipants().length) {
-        gameOver(winner);
+        gameOver(winner, gameScores);
     }
 }
 
-function gameOver(winner) {
+function gameOver(winner, gameScores) {
     if (gapi.hangout.getParticipantId() == winner) {
         addToMyScore(100);
     }
+    $('#game').clear();
     console.log('winner: ', winner);
 }
 
@@ -109,7 +110,7 @@ function getMyScore() {
 function buildScoresPane() {
     var scores = JSON.parse(gapi.hangout.data.getValue('scores'));
     var list = $("<ul id='scores_list'></ul>");
-    $('#scores_pane').append(list);
+    $('#scores_pane').empty().append(list);
     $.each(scores, function(key, value) {
         var name = gapi.hangout.getParticipantById(key).person.displayName;
         list.append($('<li></li>').text(name + ': ' + value));
