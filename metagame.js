@@ -14,12 +14,15 @@ gapi.hangout.onApiReady.add(function(eventObj){
 });
 
 function startApp() {
-    $('#app_body').append($('<p>Hello World</p>'));
     getGames(function(gs) {
-	    console.log(gs);
+	    
     });
 }
 
+
+function selectGame() {
+    
+}
 
 /*
 Calls cb with a list of lists in the following format:
