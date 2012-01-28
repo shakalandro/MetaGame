@@ -1,4 +1,4 @@
-w/*
+/*
 Roy McElmurry, Erik Nelson, Eric Spishak
 MetaGame
 UW hangout Hangout Hackathon, Winter 2012
@@ -181,7 +181,7 @@ function loadGame(name) {
 function newGameButton() {
     $('#app_content').empty()
             .append($('<button>Choose New Game</button>').click(fillGameList))
-            .append($('<button>About</button>').click(alert('By Roy McElmurry, Erik Nelson, Eric Spishak for Google hangout Hactathon 2012')));
+            .append($('<button>About</button>').click(function(){alert('By Roy McElmurry, Erik Nelson, Eric Spishak for Google hangout Hactathon 2012');}));
 }
 
 function playRound(game) {
