@@ -17,6 +17,17 @@ function startApp() {
     getGames(function(gs) {
 	    
     });
+    //    console.log(swfobject);
+    swfobject.embedSWF("http://games.mochiads.com/c/g/highway-traveling/Highway.swf", "game", "720", "480", "9.0.0");
+    var options = {partnerID: "2d828d02099b26a8", id: "leaderboard_bridge"};
+    options.callback = function (params) {
+	$('#debug').html(params.name + " (" + params.sessionID + ") just scored " + params.score + "!");
+    };
+    var id = gapi.hangout.getParticipantId();
+    options.sessionID = id;
+    var part = gapi.hangout.getParticipantById(id);
+    options.username = part.person.displayName;
+    Mochi.addLeaderboardIntegration(options);
 }
 
 
