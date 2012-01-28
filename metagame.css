@@ -6,7 +6,7 @@
 }
 
 #content_wrapper {
-    width: 200px;
+    width: 300px;
 }
 
 #game {
@@ -14,6 +14,12 @@
     width: 600;
     height: 400;
     border: 3px solid red;
+}
+
+#scores_list img {
+    width: 25px;
+    height: 25px;
+    vertical-align: middle;
 }
 
 h1 {
