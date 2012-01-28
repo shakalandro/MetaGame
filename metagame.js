@@ -90,9 +90,10 @@ function startApp() {
 function showApp(gameScores, winner) {
     gapi.hangout.showApp();
     topHatOverlay.setVisible(false);
+    var gameName = JSON.parse(gapi.hangout.data.getValue('game')).name;
     var gameDiv = $('#game_outer').empty();
     var result = '<h1>Round Summary</h1>';
-    result += '<h2>Game Scores</h2>';
+    result += '<h2>' + gameName + '</h2>';
     //    result += '<ul>';
     result += '<div id="scores_list">';
     $.each(gameScores, function(id, score) {
