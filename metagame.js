@@ -157,18 +157,28 @@ function buildScoresPane() {
     });
 }
 
+var game_map = {};
+
 function fillGameList() {
+    game_map = {};
     $('#scores_pane').hide();
     $('#app_content').empty().append($("<ul id='gamelist'></ul>"));
     getGames(function(games) {
         for(var i = 0; i < 10; i++){
             var game = selectGame(games);
-            var clickfunc = "gapi.hangout.data.setValue('gameScores', '{}');";
-            clickfunc += "gapi.hangout.data.setValue('game', " + JSON.stringify(game) + ");";
-            clickfunc += "playRound(" + JSON.stringify(game) + ");";
-            $('#gamelist').append($("<li onclick=\"" + clickfunc + "\" > " + game.name + " </li>").prepend($('<img />').attr('src', game.thumb)));
+            game_map[game.name] = game;
+            $('#gamelist').append($("<li onclick=\"loadGame('" + game.name + "');\" > " + game.name + " </li>").prepend($('<img />').attr('src', game.thumb)));
+            //$('#gamelist').append($("<li>" + game.name + "</li>").prepend($('<img />').attr('src', game.thumb))).click(function() {
+            //    gapi.hangout.data.setValue('gameScores', '{}');
+            //    gapi.hangout.data.setValue('game', JSON.stringify(game_map));
+            //});
         }
     });
+}
+
+function loadGame(name) {
+    gapi.hangout.data.setValue('gameScores', '{}');
+    gapi.hangout.data.setValue('game', JSON.stringify(game_map[name]));
 }
 
 function newGameButton() {
