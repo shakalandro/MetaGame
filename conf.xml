@@ -12,7 +12,9 @@
       <script src="http://thebeast.hopto.org/roy/metagame.js"></script>
       <link type="text/css" rel="stylesheet" href="http://thebeast.hopto.org/roy/metagame.css" />
       <div id="app_body">
-        <div id="game"></div>
+        <div id="game_outer">
+	  <div id="game"></div>
+	</div>
         <div id="content_wrapper">
             <h1>MetaGame</h1>
             <div id="app_content"></div>

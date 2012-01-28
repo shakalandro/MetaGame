@@ -9,7 +9,7 @@
     width: 200px;
 }
 
-#game {
+#game_outer {
     float: right;
     width: 600;
     height: 400;

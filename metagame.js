@@ -47,7 +47,20 @@ function gameOver(winner, gameScores) {
     if (gapi.hangout.getParticipantId() == winner) {
         addToMyScore(100);
     }
-    $('#game').clear();
+    var gameDiv = $('#game_outer');
+    var result = '<h1>Game Over</h1>';
+    result += '<h2>Scores</h2>';
+    result += '<ul>';
+    $.each(gameScores, function(id, score) {
+	    result += '<li>';
+	    var part = gapi.hangout.getParticipantById(id);
+	    result += part.person.displayName + ': ' + score + ' points';
+	    result += '</li>';
+	});
+    result += '</ul>';
+    var part = gapi.hangout.getParticipantById(winner);
+    result += '<h3>Winner: ' + part.person.displayName + '</h3>';
+    gameDiv.html(result);    
     console.log('winner: ', winner);
 }
 
