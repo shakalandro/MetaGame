@@ -11,6 +11,31 @@
 #app_body p {
     position: absolute;
     bottom: 0px;
+    margin-left: 10px;
+    text-align: center;
+}
+
+#app_content {
+    text-align: center;
+}
+
+#app_content ul {
+    text-align: left;
+    list-style-type: none;
+}
+
+#gamelist {
+    text-alight: left;
+}
+
+button {
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+
+.badge {
+    float: left;
+    margin-left: 5px;
 }
 
 #content_wrapper {
@@ -19,10 +44,31 @@
 
 #game_outer {
     float: right;
-    min-wdth: 400px;
+    min-width: 350px;
 }
 
-#scores_list img, #gamelist img {
+#game_outer h3 {
+    clear: both;
+    text-align: center;
+    margin-top: 10px;
+}
+
+#gamelist li {
+    margin: 2px;
+}
+
+#scores_list {
+    margin-left: 10px;
+    overflow: hidden;
+}
+
+#scores_list img {
+    float: left;
+    width: 35px;
+    height: 35px;
+}
+
+#gamelist img {
     width: 25px;
     height: 25px;
     vertical-align: middle;
@@ -30,4 +76,10 @@
 
 h1 {
     text-align: center;
+}
+
+.outer_badge {
+    clear: both;
+    overflow: hidden;
+    margin-bottom: 5px;
 }

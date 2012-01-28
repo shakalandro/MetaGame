@@ -91,16 +91,19 @@ function showApp(gameScores, winner) {
     gapi.hangout.showApp();
     topHatOverlay.setVisible(false);
     var gameDiv = $('#game_outer').empty();
-    var result = '<h1>Game Over</h1>';
-    result += '<h2>Scores</h2>';
-    result += '<ul>';
+    var result = '<h1>Round Summary</h1>';
+    result += '<h2>Game Scores</h2>';
+    //    result += '<ul>';
+    result += '<div id="scores_list">';
     $.each(gameScores, function(id, score) {
-	    result += '<li>';
+	    result += '<div class="outer_badge">';
 	    var part = gapi.hangout.getParticipantById(id);
-	    result += part.person.displayName + ': ' + score + ' points';
-	    result += '</li>';
+	    result += '<img src=\'' + part.person.image.url + '\'/>';
+	    result += '<div class="badge">';
+	    result += '<strong>' + part.person.displayName + '</strong><br />' + score + ' points';
+	    result += '</div></div>';
 	});
-    result += '</ul>';
+    result += '</div>';
     var part = gapi.hangout.getParticipantById(winner);
     result += '<h3>Winner: ' + part.person.displayName + '</h3>';
     gameDiv.html(result);
@@ -147,7 +150,7 @@ function getMyScore() {
 
 function buildScoresPane() {
     var scores = JSON.parse(gapi.hangout.data.getValue('scores'));
-    var list = $("<ul id='scores_list'></ul>");
+    var list = $("<div id='scores_list'></div>");
     $('#scores_pane').empty().append(list);
     console.log('building scores pane', scores);
     $.each(scores, function(key, value) {
@@ -155,7 +158,8 @@ function buildScoresPane() {
         var participant = gapi.hangout.getParticipantById(key);
         if (participant) {
             var name = participant.person.displayName;
-            var litem = $('<li></li>').append($('<span></span>').text(name + ': ' + value));
+	    
+            var litem = $('<div class="outer_badge"></div>').append($('<div class="badge"></div>').html('<strong>' + name + '</strong><br />' + value + ' points'));
             var avatar = gapi.hangout.getParticipantById(key).person.image.url;
             if (avatar) {
                 litem.prepend($('<img />').attr('src', avatar));
@@ -188,8 +192,8 @@ function loadGame(name) {
 
 function newGameButton() {
     $('#app_content').empty()
-            .append($('<button>Choose New Game</button>').click(fillGameList))
-            .append($('<button>About</button>').click(function(){alert('By Roy McElmurry, Erik Nelson, Eric Spishak for Google hangout Hackathon 2012');}));
+            .append($('<div><button>Choose New Game</button></div>').click(fillGameList))
+            .append($('<div><button>About</button></div>').click(function(){alert('By Roy McElmurry, Erik Nelson, Eric Spishak for Google hangout Hackathon 2012');}));
 }
 
 function playRound(game) {
