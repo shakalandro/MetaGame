@@ -12,10 +12,11 @@ gapi.hangout.onApiReady.add(function(eventObj){
 		gapi.hangout.data.onStateChanged.add(function(event) {
             console.log(event);
             $.each(event.addedKeys, function(idx, entry) {
-                console.log(idx, entry);
+                console.log('event key: ', entry.key, entry.value);
                 if (entry.key == 'game') {
-                    console.log('playing: ' + entry.value);
                     playGame(entry.value);
+                } else if (entry.key == 'scores') {
+                    buildScoresPane();
                 }
             });
         });
@@ -25,6 +26,7 @@ gapi.hangout.onApiReady.add(function(eventObj){
 
 function startApp() {
     initBridge();
+    setMyScore(0);
     var game = gapi.hangout.data.getValue('game');
     if (!game) {
         $('#app_content').append($("<h1 id='header'> META GAME </h1>"));
@@ -38,8 +40,55 @@ function startApp() {
             });
         }));
     } else {
+        buildScoresPane();
         playGame(game);
     }
+}
+
+/*
+Adds the given value to your score.
+*/
+function addToMyScore(dx) {
+    setMyScore(getMyScore() + dx);
+}
+
+/*
+Sets the users score to the given value.
+*/
+function setMyScore(value) {
+    var myId = gapi.hangout.getParticipantId();
+    var scores = {};
+    var shared_scores = gapi.hangout.data.getValue('scores');
+    if (shared_scores) {
+        scores = JSON.parse(shared_scores);
+    }
+    scores[myId] = value;
+    gapi.hangout.data.setValue('scores', JSON.stringify(scores));
+}
+
+/*
+Returns the users current score.
+*/
+function getMyScore() {
+    var myId = gapi.hangout.getParticipantId();
+    var shared_scores = gapi.hangout.data.getValue('scores');
+    if (shared_scores) {
+        scores = JSON.parse(shared_scores);
+        if (scores['myId']) {
+            return scores['myId'];
+        }
+    }
+    return 0;
+}
+
+function buildScoresPane() {
+    var scores = JSON.parse(gapi.hangout.data.getValue('scores'));
+    var list = $("<ul id='scores_list'></ul>");
+    $('#scores_pane').append(list);
+    $.each(scores, function(key, value) {
+        var name = gapi.hangout.getParticipantById(key).person.displayName;
+        list.append($('<li></li>').text(name + ': ' + value));
+    });
 }
 
 function playGame(game){
@@ -66,7 +115,7 @@ function selectGame(game_options) {
 
 function embedGame(url) {
     // http://games.mochiads.com/c/g/highway-traveling/Highway.swf
-    swfobject.embedSWF(url, "game", "720", "480", "9.0.0");
+    swfobject.embedSWF(url, "game", "600", "400", "9.0.0");
 }
 
 /*
