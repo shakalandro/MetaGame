@@ -63,7 +63,7 @@ function gameOver(winner, gameScores) {
     result += '<h3>Winner: ' + part.person.displayName + '</h3>';
     gameDiv.html(result);    
     console.log('winner: ', winner);
-    selectGame();
+    playRound();
 }
 
 function startApp() {
@@ -72,7 +72,6 @@ function startApp() {
     var game = gapi.hangout.data.getValue('game');
     console.log('Game is: ', game);
     if (!game) {
-		$('#app_content').append($("<ul id='gamelist'></ul>"));
 		getGames(function(games) {
             fillGameList(games);
 		});
@@ -123,6 +122,7 @@ function buildScoresPane() {
     var list = $("<ul id='scores_list'></ul>");
     $('#scores_pane').empty().append(list);
     $.each(scores, function(key, value) {
+        console.log(key, value);
         var name = gapi.hangout.getParticipantById(key).person.displayName;
         var litem = $('<li></li>').append($('<span></span>').text(name + ': ' + value));
         var avatar = gapi.hangout.getParticipantById(key).person.image.url;
@@ -134,9 +134,10 @@ function buildScoresPane() {
 }
 
 function fillGameList(games){
+    $('#app_content').append($("<ul id='gamelist'></ul>"));
 	for(var i = 0; i < 10; i++){
 		var game = selectGame(games);
-		$('#gamelist').append($("<li onclick=playGame('" + game.url + "') > " + game.name + " </li>"));
+		$('#gamelist').append($("<li onclick=playRound('" + game.url + "') > " + game.name + " </li>"));
 	}
 }
 
@@ -147,9 +148,10 @@ function playRound(url) {
             var g = selectGame(games);
             console.log(games, g);
             gapi.hangout.data.setValue('game', g.url);
+            embedGame(g.url);
         });
     } else {
-        embedGame(game);
+        embedGame(url);
     }
 }
 
@@ -171,9 +173,13 @@ function selectGame(game_options) {
 
 function embedGame(url) {
     //var url = 'http://games.mochiads.com/c/g/highway-traveling/Highway.swf';
+    console.log('Playing game: ', url);
     swfobject.embedSWF(url, "game", "600", "400", "9.0.0");
     setTimeout(function() {
-        fillGameList();
+        console.log('rechoosing game');
+        getGames(function(games) {
+            fillGameList(games);
+        });
     }, GAME_TIMEOUT);
 }
 
@@ -181,9 +187,9 @@ function scoreCallback(params) {
     console.log(params.name + " (" + params.sessionID + ") just scored " + params.score + "!");
     var gameScores = gapi.hangout.data.getValue('gameScores');
     if (gameScores) {
-	gameScores = JSON.parse(gameScores);
+        gameScores = JSON.parse(gameScores);
     } else {
-	gameScores = {};
+        gameScores = {};
     }
     gameScores[ gapi.hangout.getParticipantId() ] = params.score;
     gapi.hangout.data.setValue('gameScores', JSON.stringify(gameScores));
@@ -199,19 +205,18 @@ Calls cb with a list of lists in the following format:
 */
 function getGames(cb) {
     if (GAMES_LIST) {
-        return GAMES_LIST;
+        cb(GAMES_LIST);
     } else {
         $.ajax({
             'url': MOCHI_GAME_SERVICE,
             'data': {'q': 'leaderboard_enabled', 'limit': '1000'},
             'dataType': 'jsonp',
             'success': function(data, textStatus, crap) {
-                var res = [];
+                GAMES_LIST = [];
                 $.each(data.games, function(idx, value) {
-                    res.push({'name': value.name, 'url': value.swf_url});
+                    GAMES_LIST.push({'name': value.name, 'url': value.swf_url});
                 });
-                GAMES_LIST = res;
-                cb(res);
+                cb(GAMES_LIST);
             },
             'error': function() {
                 // Catch failure
