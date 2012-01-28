@@ -1,4 +1,4 @@
-/*
+w/*
 Roy McElmurry, Erik Nelson, Eric Spishak
 MetaGame
 UW hangout Hangout Hackathon, Winter 2012
@@ -211,7 +211,10 @@ function selectGame(game_options) {
 function embedGame(url, width, height) {
     //url = 'http://games.mochiads.com/c/g/highway-traveling/Highway.swf';
     console.log('Playing game: ', url);
-    swfobject.embedSWF(url, "game", "" + width, "" + height, "9.0.0");
+    var newHeight = Math.min(450, height);
+    var newWidth = width * newHeight / height;
+    console.log('width: ' + width + ', height: ' + height + ', newWidth: ' + newWidth + ', newHeight: ' + newHeight);
+    swfobject.embedSWF(url, "game", "" + newWidth, "" + newHeight, "9.0.0");
     setTimeout(function() {
         console.log('rechoosing game');
         newGameButton();
