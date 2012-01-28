@@ -17,7 +17,7 @@
 
 #game_outer {
     float: right;
-    border: 3px solid red;
+    min-wdth: 400px;
 }
 
 #scores_list img, #gamelist img {
