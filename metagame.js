@@ -19,12 +19,19 @@ gapi.hangout.onApiReady.add(function(eventObj){
                     buildScoresPane();
                 } else if (entry.key == 'gameScores') {
                     var gameScores = JSON.parse(entry.value);
-                    console.log(gameScores);
+                    console.log('gamescores: ', gameScores);
                     receiveScores(gameScores);
 			    }
             });
         });
 	    startApp();
+        
+        gapi.hangout.onParticipantsRemoved.add(function() {
+            var gameScores = gapi.hangout.data.getValue('gameScores');
+            if (gameScores) {
+                receiveScores(JSON.parse(gameScores));
+            }
+        });
 	}
 });
 
@@ -34,9 +41,9 @@ function receiveScores(gameScores) {
     var winner;
     $.each(gameScores, function(id, score) {
 	    count++;
-	    if (score > highScore) {
-		highScore = score;
-		winner = id;
+	    if (score >= highScore) {
+            highScore = score;
+            winner = id;
 	    }
 	});
     if (count >= gapi.hangout.getParticipants().length) {
@@ -96,8 +103,9 @@ function showApp(gameScores, winner) {
     result += '</ul>';
     var part = gapi.hangout.getParticipantById(winner);
     result += '<h3>Winner: ' + part.person.displayName + '</h3>';
-    gameDiv.html(result);    
-    fillGameList();
+    gameDiv.html(result);
+    newGameButton();
+    buildScorePane();
 }
 
 
@@ -204,17 +212,18 @@ function initBridge() {
 
 
 function selectGame(game_options) {
-    var idx = Math.round(Math.random() * game_options.length);
+    var idx = Math.floor(Math.random() * game_options.length);
     return game_options[idx];
 }
 
 function embedGame(url, width, height) {
-    //url = 'http://games.mochiads.com/c/g/highway-traveling/Highway.swf';
+    url = 'http://games.mochiads.com/c/g/fly-squirrel/fly-squirrel.swf';
     console.log('Playing game: ', url);
     var newHeight = Math.min(450, height);
     var newWidth = width * newHeight / height;
     console.log('width: ' + width + ', height: ' + height + ', newWidth: ' + newWidth + ', newHeight: ' + newHeight);
-    $('#outer_game').html('<div id="game"></div>');
+    $('#game_outer').empty().append($('<div id="game"></div>'));
+    initBridge();
     swfobject.embedSWF(url, "game", "" + newWidth, "" + newHeight, "9.0.0");
     setTimeout(function() {
         console.log('rechoosing game');

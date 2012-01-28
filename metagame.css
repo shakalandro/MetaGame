@@ -1,8 +1,14 @@
 #app_body {
     min-height: 405px;
+    max-width: 900px;
     border: 5px solid black;
     margin: auto;
     overflow: hidden;
+}
+
+#app_body p {
+    position: absolute;
+    bottom: 0px;
 }
 
 #content_wrapper {

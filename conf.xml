@@ -20,6 +20,7 @@
             <div id="app_content"></div>
             <div id="scores_pane"></div>
         </div>
+        <p>For best results, submit all scores!</p>
       </div>
       <div id="leaderboard_bridge"></div>
       <script src="http://xs.mochiads.com/static/pub/swf/leaderboard.js" type="text/javascript"></script>
