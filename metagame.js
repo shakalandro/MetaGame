@@ -90,9 +90,10 @@ function startApp() {
 function showApp(gameScores, winner) {
     gapi.hangout.showApp();
     topHatOverlay.setVisible(false);
+    var gameName = JSON.parse(gapi.hangout.data.getValue('game')).name;
     var gameDiv = $('#game_outer').empty();
     var result = '<h1>Round Summary</h1>';
-    result += '<h2>Game Scores</h2>';
+    result += '<h2>' + gameName + '</h2>';
     //    result += '<ul>';
     result += '<div id="scores_list">';
     $.each(gameScores, function(id, score) {
@@ -193,7 +194,7 @@ function loadGame(name) {
 function newGameButton() {
     $('#app_content').empty()
             .append($('<div><button>Choose New Game</button></div>').click(fillGameList))
-            .append($('<div><button>About</button></div>').click(function(){alert('By Roy McElmurry, Erik Nelson, Eric Spishak for Google hangout Hactathon 2012');}));
+            .append($('<div><button>About</button></div>').click(function(){alert('By Roy McElmurry, Erik Nelson, Eric Spishak for Google hangout Hackathon 2012');}));
 }
 
 function playRound(game) {

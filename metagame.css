@@ -10,7 +10,7 @@
 
 #app_body p {
     position: absolute;
-    bottom: 0px;
+    bottom: -10px;
     margin-left: 10px;
     text-align: center;
 }
@@ -47,6 +47,10 @@ button {
     min-width: 350px;
 }
 
+#game_outer h2 {
+    white-space: nowrap;
+}
+
 #game_outer h3 {
     clear: both;
     text-align: center;
@@ -55,6 +59,7 @@ button {
 
 #gamelist li {
     margin: 2px;
+    white-space: nowrap;
 }
 
 #scores_list {
