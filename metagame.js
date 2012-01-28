@@ -8,6 +8,9 @@ var GAMES_LIST = null;
 var MOCHI_GAME_SERVICE = 'http://catalog.mochimedia.com/feeds/query/';
 var GAME_TIMEOUT = 30000;
 
+var STATES = {'START': 1, 'CHOOSING': 2, 'CHOSEN': 3, 'RECHOOSE': '4', 'GAMEOVER': 5};
+var GAME_STATE = ;
+
 gapi.hangout.onApiReady.add(function(eventObj){
 	if (eventObj.isApiReady) {
 		gapi.hangout.data.onStateChanged.add(function(event) {
@@ -74,7 +77,6 @@ function startApp() {
     if (!game) {
         newGameButton();
     } else {
-        buildScoresPane();
         playRound(game);
     }
 }
@@ -150,6 +152,7 @@ function newGameButton() {
 function playRound(url) {
     $('#app_content').empty();
     gapi.hangout.data.setValue('scores', '{}');
+    buildScoresPane();
     embedGame(url);
 }
 
