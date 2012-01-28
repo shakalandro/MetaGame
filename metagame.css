@@ -1,19 +1,25 @@
 #app_body {
     height: 405px;
-    width: 920px;
+    width: 900px;
     border: 5px solid black;
     margin: auto;
 }
 
 #content_wrapper {
-    width: 200px;
+    width: 300px;
 }
 
-#game_outer {
+#game {
     float: right;
     width: 600;
     height: 400;
     border: 3px solid red;
+}
+
+#scores_list img {
+    width: 25px;
+    height: 25px;
+    vertical-align: middle;
 }
 
 h1 {

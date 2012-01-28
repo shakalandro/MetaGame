@@ -4,8 +4,9 @@ MetaGame
 UW hangout Hangout Hackathon, Winter 2012
 */
 
-var localState = {};
+var GAMES_LIST = null;
 var MOCHI_GAME_SERVICE = 'http://catalog.mochimedia.com/feeds/query/';
+var GAME_TIMEOUT = 30000;
 
 gapi.hangout.onApiReady.add(function(eventObj){
 	if (eventObj.isApiReady) {
@@ -13,7 +14,7 @@ gapi.hangout.onApiReady.add(function(eventObj){
             $.each(event.addedKeys, function(idx, entry) {
                 console.log('event key: ', entry.key, entry.value);
                 if (entry.key == 'game') {
-                    playGame(entry.value);
+                    playRound(entry.value);
                 } else if (entry.key == 'scores') {
                     buildScoresPane();
                 } else if (entry.key == 'gameScores') {
@@ -52,7 +53,7 @@ function gameOver(winner, gameScores) {
         addToMyScore(100);
 	topHatOverlay.setVisible(true);
     }
-
+    
     gapi.hangout.hideApp();
     setTimeout(function() {
 	    showApp(gameScores, winner);
@@ -71,19 +72,14 @@ function startApp() {
 						      'scale': 1.0
 						     });
     var game = gapi.hangout.data.getValue('game');
+    console.log('Game is: ', game);
     if (!game) {
-		fillGameList();
-        $('#app_content').append($('<button>Play Game</button>').click(function() {
-            getGames(function(games) {
-                var g = selectGame(games);
-                console.log(games, g);
-                gapi.hangout.data.setValue('game', g.url);
-                playGame(g);
-            });
-        }));
+		getGames(function(games) {
+            fillGameList(games);
+		});
     } else {
         buildScoresPane();
-        playGame(game);
+        playRound(game);
     }
 }
 
@@ -104,7 +100,7 @@ function showApp(gameScores, winner) {
     var part = gapi.hangout.getParticipantById(winner);
     result += '<h3>Winner: ' + part.person.displayName + '</h3>';
     gameDiv.html(result);    
-
+    playRound();
 }
 
 /*
@@ -148,32 +144,40 @@ function buildScoresPane() {
     var list = $("<ul id='scores_list'></ul>");
     $('#scores_pane').empty().append(list);
     $.each(scores, function(key, value) {
+        console.log(key, value);
         var name = gapi.hangout.getParticipantById(key).person.displayName;
-        list.append($('<li></li>').text(name + ': ' + value));
+        var litem = $('<li></li>').append($('<span></span>').text(name + ': ' + value));
+        var avatar = gapi.hangout.getParticipantById(key).person.image.url;
+        if (avatar) {
+            litem.prepend($('<img />').attr('src', avatar));
+        }
+        list.append(litem);
     });
 }
 
-function fillGameList(){
-	$('#app_content').append($("<ul id='gamelist'></ul>"));
-	//var games = import game list
-	//Adjust for styling of games list
-	var games = {0:{'name':"World of Warcraft", 'id':"00001001"}, 1:{'name':"Batman Returns", 'id':"001232"}};
-	var game;
-	for(game in games){
-		$('#gamelist').append($("<li value=\"" + games[game].id + "\"> " + games[game].name + " </li>"));
+function fillGameList(games){
+    $('#app_content').append($("<ul id='gamelist'></ul>"));
+	for(var i = 0; i < 10; i++){
+		var game = selectGame(games);
+		$('#gamelist').append($("<li onclick=playRound('" + game.url + "') > " + game.name + " </li>"));
 	}
-	
-	
-	//$('#app_content').append($("</ul>"));
 }
 
-function playGame(game){
+function playRound(url) {
     $('#app_content').empty();
-    embedGame(game);
+    if (!url) {
+        getGames(function(games) {
+            var g = selectGame(games);
+            console.log(games, g);
+            gapi.hangout.data.setValue('game', g.url);
+            embedGame(g.url);
+        });
+    } else {
+        embedGame(url);
+    }
 }
 
 function initBridge() {
-    var options = {partnerID: "2d828d02099b26a8", id: "leaderboard_bridge"};
     var options = {partnerID: "2d828d02099b26a8", id: "leaderboard_bridge"};
     options.callback = scoreCallback;
     var id = gapi.hangout.getParticipantId();
@@ -191,16 +195,23 @@ function selectGame(game_options) {
 
 function embedGame(url) {
     //url = 'http://games.mochiads.com/c/g/highway-traveling/Highway.swf';
+    console.log('Playing game: ', url);
     swfobject.embedSWF(url, "game", "600", "400", "9.0.0");
+    setTimeout(function() {
+        console.log('rechoosing game');
+        getGames(function(games) {
+            fillGameList(games);
+        });
+    }, GAME_TIMEOUT);
 }
 
 function scoreCallback(params) {
     console.log(params.name + " (" + params.sessionID + ") just scored " + params.score + "!");
     var gameScores = gapi.hangout.data.getValue('gameScores');
     if (gameScores) {
-	gameScores = JSON.parse(gameScores);
+        gameScores = JSON.parse(gameScores);
     } else {
-	gameScores = {};
+        gameScores = {};
     }
     gameScores[ gapi.hangout.getParticipantId() ] = params.score;
     gapi.hangout.data.setValue('gameScores', JSON.stringify(gameScores));
@@ -215,22 +226,25 @@ Calls cb with a list of lists in the following format:
 ]
 */
 function getGames(cb) {
-    $.ajax({
-	    'url': MOCHI_GAME_SERVICE,
-	    'data': {'q': 'leaderboard_enabled', 'limit': '100'},
-	    'dataType': 'jsonp',
-       	    'success': function(data, textStatus, crap) {
-		var res = [];
-		$.each(data.games, function(idx, value) {
-			res.push({'name': value.name, 'url': value.swf_url});
-		    }
-		);
-		cb(res);
-	    },
-	    'error': function() {
-            // Catch failure
-	    } 
-    });
+    if (GAMES_LIST) {
+        cb(GAMES_LIST);
+    } else {
+        $.ajax({
+            'url': MOCHI_GAME_SERVICE,
+            'data': {'q': 'leaderboard_enabled', 'limit': '1000'},
+            'dataType': 'jsonp',
+            'success': function(data, textStatus, crap) {
+                GAMES_LIST = [];
+                $.each(data.games, function(idx, value) {
+                    GAMES_LIST.push({'name': value.name, 'url': value.swf_url});
+                });
+                cb(GAMES_LIST);
+            },
+            'error': function() {
+                // Catch failure
+            } 
+        });
+    }
 }
 
 /**************************STOLEN METHODS**************************/
