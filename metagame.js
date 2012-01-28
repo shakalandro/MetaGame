@@ -70,13 +70,13 @@ function startApp() {
 						      'rotateWithFace': true,
 						      'scale': 1.0
 						     });
-    var game = JSON.parse(gapi.hangout.data.getValue('game'));
+    var game = gapi.hangout.data.getValue('game');
     console.log('Game is: ', game);
     $('#scores_pane').hide();
     if (!game) {
         newGameButton();
     } else {
-        playRound(game);
+        playRound(JSON.parse(game));
     }
 }
 
@@ -163,7 +163,7 @@ function fillGameList() {
     getGames(function(games) {
         for(var i = 0; i < 10; i++){
             var game = selectGame(games);
-            $('#gamelist').append($("<li onclick=\"gapi.hangout.data.setValue('gameScores', '{}');gapi.hangout.data.setValue('game', " + JSON.stringify(game) + "); playRound('" + game + "');\" > " + game.name + " </li>"));
+            $('#gamelist').append($("<li onclick=\"gapi.hangout.data.setValue('gameScores', '{}');gapi.hangout.data.setValue('game', " + JSON.stringify(game) + "); playRound('" + game + "');\" > " + game.name + " </li>").prepend($('<img>').attr('src', game.thumb)));
         }
     });
 }
@@ -175,6 +175,7 @@ function newGameButton() {
 }
 
 function playRound(game) {
+    console.log('playround arg: ', game);
     $('#app_content').empty();
     $('#scores_pane').show();
     buildScoresPane();
@@ -197,10 +198,10 @@ function selectGame(game_options) {
     return game_options[idx];
 }
 
-function embedGame(url, width, height) {
+function embedGame(url) {
     //url = 'http://games.mochiads.com/c/g/highway-traveling/Highway.swf';
     console.log('Playing game: ', url);
-    swfobject.embedSWF(url, "game", "" + width, "" + height, "9.0.0");
+    swfobject.embedSWF(url, "game", "600", "400", "9.0.0");
     setTimeout(function() {
         console.log('rechoosing game');
         newGameButton();
@@ -238,7 +239,7 @@ function getGames(cb) {
             'success': function(data, textStatus, crap) {
                 GAMES_LIST = [];
                 $.each(data.games, function(idx, value) {
-                    GAMES_LIST.push({'name': value.name, 'url': value.swf_url, 'width': value.width, 'height': value.height});
+                    GAMES_LIST.push({'name': value.name, 'url': value.swf_url, 'width': value.width, 'height': value.height, 'thumb': value.thumbnail_url});
                 });
                 cb(GAMES_LIST);
             },

@@ -1,7 +1,8 @@
 #app_body {
+    height: 405px;
+    width: 900px;
     border: 5px solid black;
     margin: auto;
-    overflow: hidden;
 }
 
 #content_wrapper {
@@ -10,10 +11,12 @@
 
 #game_outer {
     float: right;
+    width: 600;
+    height: 400;
     border: 3px solid red;
 }
 
-#scores_list img {
+#scores_list img, #gamelist img {
     width: 25px;
     height: 25px;
     vertical-align: middle;
