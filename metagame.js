@@ -39,7 +39,7 @@ function receiveScores(gameScores) {
 		winner = id;
 	    }
 	});
-    if (count == gapi.hangout.getParticipants().length) {
+    if (count >= gapi.hangout.getParticipants().length) {
         gameOver(winner, gameScores);
     }
 }
@@ -84,7 +84,7 @@ function showApp(gameScores, winner) {
     gapi.hangout.showApp();
     topHatOverlay.setVisible(false);
     var gameDiv = $('#game_outer').empty();
-    var result = '<div id="game"></div><h1>Game Over</h1>';
+    var result = '<h1>Game Over</h1>';
     result += '<h2>Scores</h2>';
     result += '<ul>';
     $.each(gameScores, function(id, score) {
@@ -214,6 +214,7 @@ function embedGame(url, width, height) {
     var newHeight = Math.min(450, height);
     var newWidth = width * newHeight / height;
     console.log('width: ' + width + ', height: ' + height + ', newWidth: ' + newWidth + ', newHeight: ' + newHeight);
+    $('#outer_game').html('<div id="game"></div>');
     swfobject.embedSWF(url, "game", "" + newWidth, "" + newHeight, "9.0.0");
     setTimeout(function() {
         console.log('rechoosing game');
