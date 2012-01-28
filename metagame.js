@@ -226,11 +226,9 @@ function embedGame(url, width, height) {
     console.log('Playing game: ', url);
     var newHeight = Math.min(450, height);
     var newWidth = width * newHeight / height;
-    var useWidth = Math.min(575, newWidth);
-    var useHeight = newHeight * useWidth / newWidth;
-    console.log('width: ' + width + ', height: ' + height + ', useWidth: ' + useWidth + ', useHeight: ' + useHeight);
+    console.log('width: ' + width + ', height: ' + height + ', newWidth: ' + newWidth + ', newHeight: ' + newHeight);
     $('#game_outer').empty().append($('<div id="game"></div>'));
-    swfobject.embedSWF(url, "game", "" + useWidth, "" + useHeight, "9.0.0");
+    swfobject.embedSWF(url, "game", "" + newWidth, "" + newHeight, "9.0.0");
     initBridge();
     setTimeout(function() {
         console.log('rechoosing game');
@@ -262,10 +260,13 @@ function getGames(cb) {
     if (GAMES_LIST) {
         cb(GAMES_LIST);
     } else {
-        var offset = 0;//parseInt(Math.random() * 1000);
+        var offset = parseInt(Math.random() * 1000);
         $.ajax({
             'url': MOCHI_GAME_SERVICE,
-            'data': {'q': '(((not category:puzzles) and not category:jigsaw) and leaderboard_enabled)', 'limit': '100', 'offset': offset},
+            'data': {'q': '(((((not category:puzzles) and leaderboard_enabled) and not category:jigsaw) and width:<=575) or height:<=450)',
+                     'limit': '100',
+                     'offset': offset
+            },
             'dataType': 'jsonp',
             'success': function(data, textStatus, crap) {
                 GAMES_LIST = [];
