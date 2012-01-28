@@ -1,7 +1,3 @@
-body {
-    font-family: "Cabin Sketch", sans-serif;
-}
-
 #app_body {
     min-height: 405px;
     max-width: 900px;
@@ -9,6 +5,7 @@ body {
     margin: auto;
     overflow: hidden;
     position: relative;
+    font-family: "Cabin Sketch", sans-serif;
 }
 
 #app_body p {
