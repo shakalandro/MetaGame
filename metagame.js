@@ -10,19 +10,36 @@ var MOCHI_GAME_SERVICE = 'http://catalog.mochimedia.com/feeds/query/';
 gapi.hangout.onApiReady.add(function(eventObj){
 	if (eventObj.isApiReady) {
 		gapi.hangout.data.onStateChanged.add(function(event) {
-            console.log(event);
             $.each(event.addedKeys, function(idx, entry) {
                 console.log('event key: ', entry.key, entry.value);
                 if (entry.key == 'game') {
                     playGame(entry.value);
                 } else if (entry.key == 'scores') {
                     buildScoresPane();
-                }
+                } else if (entry.key == 'gameScores') {
+                    var gameScores = JSON.parse(entry.value);
+                    console.log(gameScores);
+                    receiveScores(gameScores);
+			    }
             });
         });
 	    startApp();
 	}
-});
+    });
+
+function receiveScores(gameScores) {
+    var count = 0;
+    $.each(gameScores, function() {
+	    count++;
+	});
+    if (count == gapi.hangout.getParticipants().length) {
+	gameOver();
+    }
+}
+
+function gameOver() {
+    alert('game over');
+}
 
 function startApp() {
     initBridge();
@@ -112,9 +129,8 @@ function playGame(game){
 
 function initBridge() {
     var options = {partnerID: "2d828d02099b26a8", id: "leaderboard_bridge"};
-    options.callback = function (params) {
-        console.log(params.username + " (" + params.sessionID + ") just scored " + params.score + "!");
-    };
+    var options = {partnerID: "2d828d02099b26a8", id: "leaderboard_bridge"};
+    options.callback = scoreCallback;
     var id = gapi.hangout.getParticipantId();
     options.sessionID = id;
     var part = gapi.hangout.getParticipantById(id);
@@ -122,15 +138,29 @@ function initBridge() {
     Mochi.addLeaderboardIntegration(options);
 }
 
+
 function selectGame(game_options) {
     var idx = Math.round(Math.random() * game_options.length);
     return game_options[idx];
 }
 
 function embedGame(url) {
-    // http://games.mochiads.com/c/g/highway-traveling/Highway.swf
     swfobject.embedSWF(url, "game", "600", "400", "9.0.0");
+    //var url = 'http://games.mochiads.com/c/g/highway-traveling/Highway.swf';
 }
+
+function scoreCallback(params) {
+    console.log(params.name + " (" + params.sessionID + ") just scored " + params.score + "!");
+    var gameScores = gapi.hangout.data.getValue('gameScores');
+    if (gameScores) {
+	gameScores = JSON.parse(gameScores);
+    } else {
+	gameScores = {};
+    }
+    gameScores[ gapi.hangout.getParticipantId() ] = params.score;
+    gapi.hangout.data.setValue('gameScores', JSON.stringify(gameScores));
+};
+
 
 /*
 Calls cb with a list of lists in the following format:
