@@ -10,9 +10,10 @@
       <script src="http://thebeast.hopto.org/eric/swfobject.js"></script>
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
       <script src="http://thebeast.hopto.org/roy/metagame.js"></script>
+      <link type="text/css" rel="stylesheet" href="http://thebeast.hopto.org/roy/metagame.css" />
       <div id="app_body">
-        <div id="app_content"></div>
         <div id="game"></div>
+        <div id="app_content"></div>
       </div>
       <div id="leaderboard_bridge"></div>
       <script src="http://xs.mochiads.com/static/pub/swf/leaderboard.js" type="text/javascript"></script>

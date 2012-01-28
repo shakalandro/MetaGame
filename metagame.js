@@ -37,9 +37,9 @@ function startApp() {
                 playGame(g);
             });
         }));
-        } else {
-            playGame(game);
-        }
+    } else {
+        playGame(game);
+    }
 }
 
 function playGame(game){

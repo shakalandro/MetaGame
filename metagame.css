@@ -1,0 +1,12 @@
+#app_body {
+    height: 98%;
+    width: 99%;
+    border: 5px solid black;
+}
+
+#game {
+    float: right;
+    width: 720;
+    height: 480;
+    border: 3px solid red;
+}
