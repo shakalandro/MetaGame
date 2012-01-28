@@ -7,27 +7,14 @@
   <Content type="html">
     <![CDATA[
       <script src="//hangoutsapi.talkgadget.google.com/hangouts/api/hangout.js?v=0.1"></script>
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-<!--      <script src="http://thebeast.hopto.org/eric/metagame.js"></script>-->
       <script src="http://thebeast.hopto.org/eric/swfobject.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
+      <script src="http://thebeast.hopto.org/eric/metagame.js"></script>
+      <div id="app_body"></div>
       <div id="debug"></div>
       <div id="game"></div>
       <div id="leaderboard_bridge"></div>
       <script src="http://xs.mochiads.com/static/pub/swf/leaderboard.js" type="text/javascript"></script>
-      <script type="text/javascript">
-	  swfobject.embedSWF("http://games.mochiads.com/c/g/highway-traveling/Highway.swf", "game", "720", "480", "9.0.0");
-	  gapi.hangout.onApiReady.add(function() {
-	    var options = {partnerID: "2d828d02099b26a8", id: "leaderboard_bridge"};
-  	    options.callback = function (params) {
-              $('#debug').html(params.name + " (" + params.sessionID + ") just scored " + params.score + "!");
-	    };
-	    var id = gapi.hangout.getParticipantId();
-            options.sessionID = id;
-	    var part = gapi.hangout.getParticipantById(id);
-	    options.username = part.person.displayName;
-            Mochi.addLeaderboardIntegration(options);
-	  });
-      </script>
     ]]>
   </Content>
 </Module>
