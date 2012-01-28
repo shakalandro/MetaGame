@@ -6,10 +6,7 @@ UW hangout Hangout Hackathon, Winter 2012
 
 var GAMES_LIST = null;
 var MOCHI_GAME_SERVICE = 'http://catalog.mochimedia.com/feeds/query/';
-var GAME_TIMEOUT = 30000;
-
-var STATES = {'START': 1, 'CHOOSING': 2, 'CHOSEN': 3, 'RECHOOSE': '4', 'GAMEOVER': 5};
-var GAME_STATE = null;
+var GAME_TIMEOUT = 120000;
 
 gapi.hangout.onApiReady.add(function(eventObj){
 	if (eventObj.isApiReady) {
@@ -50,14 +47,13 @@ function receiveScores(gameScores) {
 var topHatOverlay;
 
 function gameOver(winner, gameScores) {
-    gapi.hangout.setDisplayedParticipant(winner);
     console.log('winner: ', winner);
     if (gapi.hangout.getParticipantId() == winner) {
         addToMyScore(100);
 	topHatOverlay.setVisible(true);
     }
-    
     gapi.hangout.hideApp();
+    gapi.hangout.setDisplayedParticipant(winner);
     setTimeout(function() {
 	    showApp(gameScores, winner);
 	}, 10000);
@@ -76,10 +72,10 @@ function startApp() {
 						     });
     var game = gapi.hangout.data.getValue('game');
     console.log('Game is: ', game);
+    $('#scores_pane').hide();
     if (!game) {
         newGameButton();
     } else {
-        buildScoresPane();
         playRound(game);
     }
 }
@@ -87,8 +83,8 @@ function startApp() {
 function showApp(gameScores, winner) {
     gapi.hangout.showApp();
     topHatOverlay.setVisible(false);
-    var gameDiv = $('#game_outer');
-    var result = '<h1>Game Over</h1>';
+    var gameDiv = $('#game_outer').empty();
+    var result = '<div id="game"></div><h1>Game Over</h1>';
     result += '<h2>Scores</h2>';
     result += '<ul>';
     $.each(gameScores, function(id, score) {
@@ -104,17 +100,6 @@ function showApp(gameScores, winner) {
     fillGameList();
 }
 
-function startApp() {
-    initBridge();
-    setMyScore(0);
-    var game = gapi.hangout.data.getValue('game');
-    console.log('Game is: ', game);
-    if (!game) {
-        newGameButton();
-    } else {
-        playRound(game);
-    }
-}
 
 /*
 Adds the given value to your score.
@@ -156,24 +141,29 @@ function buildScoresPane() {
     var scores = JSON.parse(gapi.hangout.data.getValue('scores'));
     var list = $("<ul id='scores_list'></ul>");
     $('#scores_pane').empty().append(list);
+    console.log('building scores pane', scores);
     $.each(scores, function(key, value) {
         console.log(key, value);
-        var name = gapi.hangout.getParticipantById(key).person.displayName;
-        var litem = $('<li></li>').append($('<span></span>').text(name + ': ' + value));
-        var avatar = gapi.hangout.getParticipantById(key).person.image.url;
-        if (avatar) {
-            litem.prepend($('<img />').attr('src', avatar));
+        var participant = gapi.hangout.getParticipantById(key);
+        if (participant) {
+            var name = participant.person.displayName;
+            var litem = $('<li></li>').append($('<span></span>').text(name + ': ' + value));
+            var avatar = gapi.hangout.getParticipantById(key).person.image.url;
+            if (avatar) {
+                litem.prepend($('<img />').attr('src', avatar));
+            }
+            list.append(litem);
         }
-        list.append(litem);
     });
 }
 
 function fillGameList() {
+    $('#scores_pane').hide();
     $('#app_content').empty().append($("<ul id='gamelist'></ul>"));
     getGames(function(games) {
         for(var i = 0; i < 10; i++){
             var game = selectGame(games);
-            $('#gamelist').append($("<li onclick=\"gapi.hangout.data.setValue('game', '" + game.url + "'); playRound('" + game.url + "');\" > " + game.name + " </li>"));
+            $('#gamelist').append($("<li onclick=\"gapi.hangout.data.setValue('gameScores', '{}');gapi.hangout.data.setValue('game', '" + game.url + "'); playRound('" + game.url + "');\" > " + game.name + " </li>"));
         }
     });
 }
@@ -186,7 +176,7 @@ function newGameButton() {
 
 function playRound(url) {
     $('#app_content').empty();
-    gapi.hangout.data.setValue('scores', '{}');
+    $('#scores_pane').show();
     buildScoresPane();
     embedGame(url);
 }
@@ -208,7 +198,7 @@ function selectGame(game_options) {
 }
 
 function embedGame(url) {
-    //url = 'http://games.mochiads.com/c/g/highway-traveling/Highway.swf';
+    url = 'http://games.mochiads.com/c/g/highway-traveling/Highway.swf';
     console.log('Playing game: ', url);
     swfobject.embedSWF(url, "game", "600", "400", "9.0.0");
     setTimeout(function() {
@@ -243,7 +233,7 @@ function getGames(cb) {
     } else {
         $.ajax({
             'url': MOCHI_GAME_SERVICE,
-            'data': {'q': 'leaderboard_enabled', 'limit': '1000'},
+            'data': {'q': 'leaderboard_enabled', 'limit': '100'},
             'dataType': 'jsonp',
             'success': function(data, textStatus, crap) {
                 GAMES_LIST = [];
