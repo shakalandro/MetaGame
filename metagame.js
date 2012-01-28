@@ -63,7 +63,7 @@ function gameOver(winner, gameScores) {
     result += '<h3>Winner: ' + part.person.displayName + '</h3>';
     gameDiv.html(result);    
     console.log('winner: ', winner);
-    playRound();
+    fillGameList();
 }
 
 function startApp() {
@@ -72,9 +72,7 @@ function startApp() {
     var game = gapi.hangout.data.getValue('game');
     console.log('Game is: ', game);
     if (!game) {
-		getGames(function(games) {
-            fillGameList(games);
-		});
+        newGameButton();
     } else {
         buildScoresPane();
         playRound(game);
@@ -133,26 +131,26 @@ function buildScoresPane() {
     });
 }
 
-function fillGameList(games){
-    $('#app_content').append($("<ul id='gamelist'></ul>"));
-	for(var i = 0; i < 10; i++){
-		var game = selectGame(games);
-		$('#gamelist').append($("<li onclick=playRound('" + game.url + "') > " + game.name + " </li>"));
-	}
+function fillGameList() {
+    $('#app_content').empty().append($("<ul id='gamelist'></ul>"));
+    getGames(function(games) {
+        for(var i = 0; i < 10; i++){
+            var game = selectGame(games);
+            $('#gamelist').append($("<li onclick=\"gapi.hangout.data.setValue('game', '" + game.url + "'); playRound('" + game.url + "');\" > " + game.name + " </li>"));
+        }
+    });
+}
+
+function newGameButton() {
+    $('#app_content').empty()
+            .append($('<button>Choose New Game</button>').click(fillGameList))
+            .append($('<button>About</button>'));
 }
 
 function playRound(url) {
     $('#app_content').empty();
-    if (!url) {
-        getGames(function(games) {
-            var g = selectGame(games);
-            console.log(games, g);
-            gapi.hangout.data.setValue('game', g.url);
-            embedGame(g.url);
-        });
-    } else {
-        embedGame(url);
-    }
+    gapi.hangout.data.setValue('scores', '{}');
+    embedGame(url);
 }
 
 function initBridge() {
@@ -177,9 +175,7 @@ function embedGame(url) {
     swfobject.embedSWF(url, "game", "600", "400", "9.0.0");
     setTimeout(function() {
         console.log('rechoosing game');
-        getGames(function(games) {
-            fillGameList(games);
-        });
+        newGameButton();
     }, GAME_TIMEOUT);
 }
 
