@@ -223,13 +223,9 @@ function selectGame(game_options) {
 function embedGame(url, width, height) {
     //url = 'http://games.mochiads.com/c/g/fly-squirrel/fly-squirrel.swf';
     console.log('Playing game: ', url);
-    var newHeight = Math.min(450, height);
-    var newWidth = width * newHeight / height;
-    var useWidth = Math.min(575, newWidth);
-    var useHeight = newHeight * useWidth / newWidth;
-    console.log('width: ' + width + ', height: ' + height + ', useWidth: ' + useWidth + ', useHeight: ' + useHeight);
+    console.log('width: ' + width + ', height: ' + height);
     $('#game_outer').empty().append($('<div id="game"></div>'));
-    swfobject.embedSWF(url, "game", "" + useWidth, "" + useHeight, "9.0.0");
+    swfobject.embedSWF(url, "game", "" + width, "" + height, "9.0.0");
     initBridge();
     setTimeout(function() {
         console.log('rechoosing game');
