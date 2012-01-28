@@ -56,7 +56,7 @@ var topHatOverlay;
 function gameOver(winner, gameScores) {
     console.log('winner: ', winner);
     if (gapi.hangout.getParticipantId() == winner) {
-        addToMyScore(100);
+        addToMyScore(parseInt(gameScores[winner]));
 	topHatOverlay.setVisible(true);
     }
     gapi.hangout.hideApp();
@@ -67,10 +67,9 @@ function gameOver(winner, gameScores) {
 }
 
 function startApp() {
-    initBridge();
     setMyScore(0);
-    
-    var topHat = gapi.hangout.av.effects.createImageResource('http://hangoutmediastarter.appspot.com/static/topHat.png');
+    //var topHat = gapi.hangout.av.effects.createImageResource('http://hangoutmediastarter.appspot.com/static/topHat.png');
+    var topHat = gapi.hangout.av.effects.createImageResource('http://thebeast.hopto.org/roy/crown_alpha.png');
     topHatOverlay = topHat.createFaceTrackingOverlay(
 						     {'trackingFeature':
 						      gapi.hangout.av.effects.FaceTrackingFeature.NOSE_ROOT,
@@ -222,14 +221,14 @@ function selectGame(game_options) {
 }
 
 function embedGame(url, width, height) {
-    url = 'http://games.mochiads.com/c/g/fly-squirrel/fly-squirrel.swf';
+    //url = 'http://games.mochiads.com/c/g/fly-squirrel/fly-squirrel.swf';
     console.log('Playing game: ', url);
     var newHeight = Math.min(450, height);
     var newWidth = width * newHeight / height;
     console.log('width: ' + width + ', height: ' + height + ', newWidth: ' + newWidth + ', newHeight: ' + newHeight);
     $('#game_outer').empty().append($('<div id="game"></div>'));
-    initBridge();
     swfobject.embedSWF(url, "game", "" + newWidth, "" + newHeight, "9.0.0");
+    initBridge();
     setTimeout(function() {
         console.log('rechoosing game');
         newGameButton();
@@ -260,9 +259,10 @@ function getGames(cb) {
     if (GAMES_LIST) {
         cb(GAMES_LIST);
     } else {
+        var offset = 0;//parseInt(Math.random() * 1000);
         $.ajax({
             'url': MOCHI_GAME_SERVICE,
-            'data': {'q': 'leaderboard_enabled', 'limit': '100'},
+            'data': {'q': '(((not category:puzzles) and not category:jigsaw) and leaderboard_enabled)', 'limit': '100', 'offset': offset},
             'dataType': 'jsonp',
             'success': function(data, textStatus, crap) {
                 GAMES_LIST = [];
@@ -278,25 +278,3 @@ function getGames(cb) {
     }
 }
 
-/**************************STOLEN METHODS**************************/
-
-/**
- * Gets the user's hangoutId from the userKey. This is the oppposite operation
- * of makeUserKey_.
- * @return {?string} The user's hangoutId, or null if the userKey isn't
- *     correctly formatted.
- * @see #makeUserKey_
- * @private
- */
-function getHangoutIdFromUserKey_(userKey) {
-  if (typeof userKey === 'string') {
-    var idx = userKey.lastIndexOf(':');
-
-    if (idx >= 0) {
-      if ('avatar' === userKey.substr(idx + 1)) {
-        return userKey.substr(0, idx);
-      }
-    }
-  }
-  return null;
-}
