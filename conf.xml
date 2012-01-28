@@ -14,6 +14,7 @@
       <div id="app_body">
         <div id="game"></div>
         <div id="content_wrapper">
+            <h1>MetaGame</h1>
             <div id="app_content"></div>
             <div id="scores_pane"></div>
         </div>

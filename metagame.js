@@ -25,7 +25,7 @@ gapi.hangout.onApiReady.add(function(eventObj){
         });
 	    startApp();
 	}
-    });
+});
 
 function receiveScores(gameScores) {
     var count = 0;
@@ -33,12 +33,14 @@ function receiveScores(gameScores) {
 	    count++;
 	});
     if (count == gapi.hangout.getParticipants().length) {
-	gameOver();
+        gameOver();
     }
 }
 
-function gameOver() {
-    alert('game over');
+function gameOver(winner) {
+    if (gapi.hangout.getParticipantId() == winner) {
+        addToMyScore(100);
+    }
 }
 
 function startApp() {
@@ -46,7 +48,6 @@ function startApp() {
     setMyScore(0);
     var game = gapi.hangout.data.getValue('game');
     if (!game) {
-        $('#app_content').append($("<h1 id='header'> META GAME </h1>"));
 		fillGameList();
         $('#app_content').append($('<button>Play Game</button>').click(function() {
             getGames(function(games) {
