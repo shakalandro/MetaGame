@@ -43,30 +43,33 @@ function receiveScores(gameScores) {
     }
 }
 
+var topHatOverlay;
+
 function gameOver(winner, gameScores) {
+    gapi.hangout.setDisplayedParticipant(winner);
+    console.log('winner: ', winner);
     if (gapi.hangout.getParticipantId() == winner) {
         addToMyScore(100);
+	topHatOverlay.setVisible(true);
     }
-    var gameDiv = $('#game_outer');
-    var result = '<h1>Game Over</h1>';
-    result += '<h2>Scores</h2>';
-    result += '<ul>';
-    $.each(gameScores, function(id, score) {
-	    result += '<li>';
-	    var part = gapi.hangout.getParticipantById(id);
-	    result += part.person.displayName + ': ' + score + ' points';
-	    result += '</li>';
-	});
-    result += '</ul>';
-    var part = gapi.hangout.getParticipantById(winner);
-    result += '<h3>Winner: ' + part.person.displayName + '</h3>';
-    gameDiv.html(result);    
-    console.log('winner: ', winner);
+
+    gapi.hangout.hideApp();
+    setTimeout(function() {
+	    showApp(gameScores, winner);
+	}, 10000);
 }
 
 function startApp() {
     initBridge();
     setMyScore(0);
+    var topHat = gapi.hangout.av.effects.createImageResource('http://hangoutmediastarter.appspot.com/static/topHat.png');
+    topHatOverlay = topHat.createFaceTrackingOverlay(
+						     {'trackingFeature':
+						      gapi.hangout.av.effects.FaceTrackingFeature.NOSE_ROOT,
+						      'scaleWithFace': true,
+						      'rotateWithFace': true,
+						      'scale': 1.0
+						     });
     var game = gapi.hangout.data.getValue('game');
     if (!game) {
 		fillGameList();
@@ -82,6 +85,26 @@ function startApp() {
         buildScoresPane();
         playGame(game);
     }
+}
+
+function showApp(gameScores, winner) {
+    gapi.hangout.showApp();
+    topHatOverlay.setVisible(false);
+    var gameDiv = $('#game_outer');
+    var result = '<h1>Game Over</h1>';
+    result += '<h2>Scores</h2>';
+    result += '<ul>';
+    $.each(gameScores, function(id, score) {
+	    result += '<li>';
+	    var part = gapi.hangout.getParticipantById(id);
+	    result += part.person.displayName + ': ' + score + ' points';
+	    result += '</li>';
+	});
+    result += '</ul>';
+    var part = gapi.hangout.getParticipantById(winner);
+    result += '<h3>Winner: ' + part.person.displayName + '</h3>';
+    gameDiv.html(result);    
+
 }
 
 /*
@@ -167,7 +190,7 @@ function selectGame(game_options) {
 }
 
 function embedGame(url) {
-    //var url = 'http://games.mochiads.com/c/g/highway-traveling/Highway.swf';
+    //url = 'http://games.mochiads.com/c/g/highway-traveling/Highway.swf';
     swfobject.embedSWF(url, "game", "600", "400", "9.0.0");
 }
 
