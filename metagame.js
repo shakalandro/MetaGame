@@ -29,11 +29,17 @@ gapi.hangout.onApiReady.add(function(eventObj){
 
 function receiveScores(gameScores) {
     var count = 0;
-    $.each(gameScores, function() {
+    var highScore = 0;
+    var winner;
+    $.each(gameScores, function(id, score) {
 	    count++;
+	    if (score > highScore) {
+		highScore = score;
+		winner = id;
+	    }
 	});
     if (count == gapi.hangout.getParticipants().length) {
-        gameOver();
+        gameOver(winner);
     }
 }
 
@@ -41,6 +47,7 @@ function gameOver(winner) {
     if (gapi.hangout.getParticipantId() == winner) {
         addToMyScore(100);
     }
+    console.log('winner: ', winner);
 }
 
 function startApp() {
@@ -146,8 +153,8 @@ function selectGame(game_options) {
 }
 
 function embedGame(url) {
-    swfobject.embedSWF(url, "game", "600", "400", "9.0.0");
     //var url = 'http://games.mochiads.com/c/g/highway-traveling/Highway.swf';
+    swfobject.embedSWF(url, "game", "600", "400", "9.0.0");
 }
 
 function scoreCallback(params) {
