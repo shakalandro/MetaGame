@@ -9,7 +9,7 @@ var MOCHI_GAME_SERVICE = 'http://catalog.mochimedia.com/feeds/query/';
 var GAME_TIMEOUT = 30000;
 
 var STATES = {'START': 1, 'CHOOSING': 2, 'CHOSEN': 3, 'RECHOOSE': '4', 'GAMEOVER': 5};
-var GAME_STATE = ;
+var GAME_STATE = null;
 
 gapi.hangout.onApiReady.add(function(eventObj){
 	if (eventObj.isApiReady) {
