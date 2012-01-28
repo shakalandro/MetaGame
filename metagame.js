@@ -14,14 +14,18 @@ gapi.hangout.onApiReady.add(function(eventObj){
 });
 
 function startApp() {
+    initBridge();
     getGames(function(gs) {
-	    
+        var choice = selectGame(gs);
+	    console.log(choice);
+        embedGame(choice.url);
     });
-    //    console.log(swfobject);
-    swfobject.embedSWF("http://games.mochiads.com/c/g/highway-traveling/Highway.swf", "game", "720", "480", "9.0.0");
+}
+
+function initBridge() {
     var options = {partnerID: "2d828d02099b26a8", id: "leaderboard_bridge"};
     options.callback = function (params) {
-	$('#debug').html(params.name + " (" + params.sessionID + ") just scored " + params.score + "!");
+        console.log(params.username + " (" + params.sessionID + ") just scored " + params.score + "!");
     };
     var id = gapi.hangout.getParticipantId();
     options.sessionID = id;
@@ -30,16 +34,21 @@ function startApp() {
     Mochi.addLeaderboardIntegration(options);
 }
 
+function selectGame(game_options) {
+    var idx = Math.round(Math.random() * game_options.length);
+    return game_options[idx];
+}
 
-function selectGame() {
-    
+function embedGame(url) {
+    // http://games.mochiads.com/c/g/highway-traveling/Highway.swf
+    swfobject.embedSWF(url, "game", "720", "480", "9.0.0");
 }
 
 /*
 Calls cb with a list of lists in the following format:
 
 [
-   [name, swf_url]
+   {'name': ..., 'url': ...}
 ]
 */
 function getGames(cb) {
@@ -50,7 +59,7 @@ function getGames(cb) {
        	    'success': function(data, textStatus, crap) {
 		var res = [];
 		$.each(data.games, function(idx, value) {
-			res.push([value.name, value.swf_url]);
+			res.push({'name': value.name, 'url': value.swf_url});
 		    }
 		);
 		cb(res);
