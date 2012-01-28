@@ -130,8 +130,8 @@ function getMyScore() {
     var shared_scores = gapi.hangout.data.getValue('scores');
     if (shared_scores) {
         scores = JSON.parse(shared_scores);
-        if (scores['myId']) {
-            return scores['myId'];
+        if (scores[myId]) {
+            return scores[myId];
         }
     }
     return 0;
@@ -168,10 +168,7 @@ function fillGameList() {
             var game = selectGame(games);
             game_map[game.name] = game;
             $('#gamelist').append($("<li onclick=\"loadGame('" + game.name + "');\" > " + game.name + " </li>").prepend($('<img />').attr('src', game.thumb)));
-            //$('#gamelist').append($("<li>" + game.name + "</li>").prepend($('<img />').attr('src', game.thumb))).click(function() {
-            //    gapi.hangout.data.setValue('gameScores', '{}');
-            //    gapi.hangout.data.setValue('game', JSON.stringify(game_map));
-            //});
+
         }
     });
 }
@@ -184,7 +181,7 @@ function loadGame(name) {
 function newGameButton() {
     $('#app_content').empty()
             .append($('<button>Choose New Game</button>').click(fillGameList))
-            .append($('<button>About</button>'));
+            .append($('<button>About</button>').click(alert('By Roy McElmurry, Erik Nelson, Eric Spishak for Google hangout Hactathon 2012')));
 }
 
 function playRound(game) {
