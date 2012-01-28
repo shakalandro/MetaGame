@@ -48,7 +48,20 @@ function gameOver(winner, gameScores) {
     if (gapi.hangout.getParticipantId() == winner) {
         addToMyScore(100);
     }
-    $('#game').clear();
+    var gameDiv = $('#game_outer');
+    var result = '<h1>Game Over</h1>';
+    result += '<h2>Scores</h2>';
+    result += '<ul>';
+    $.each(gameScores, function(id, score) {
+	    result += '<li>';
+	    var part = gapi.hangout.getParticipantById(id);
+	    result += part.person.displayName + ': ' + score + ' points';
+	    result += '</li>';
+	});
+    result += '</ul>';
+    var part = gapi.hangout.getParticipantById(winner);
+    result += '<h3>Winner: ' + part.person.displayName + '</h3>';
+    gameDiv.html(result);    
     console.log('winner: ', winner);
     selectGame();
 }
@@ -59,10 +72,10 @@ function startApp() {
     var game = gapi.hangout.data.getValue('game');
     console.log('Game is: ', game);
     if (!game) {
-		fillGameList();
-        $('#app_content').append($('<button>Play Game</button>').click(function() {
-            playRound();
-        }));
+		$('#app_content').append($("<ul id='gamelist'></ul>"));
+		getGames(function(games) {
+            fillGameList(games);
+		});
     } else {
         buildScoresPane();
         playRound(game);
@@ -120,18 +133,11 @@ function buildScoresPane() {
     });
 }
 
-function fillGameList(){
-	$('#app_content').append($("<ul id='gamelist'></ul>"));
-	//var games = import game list
-	//Adjust for styling of games list
-	var games = {0:{'name':"World of Warcraft", 'id':"00001001"}, 1:{'name':"Batman Returns", 'id':"001232"}};
-	var game;
-	for(game in games){
-		$('#gamelist').append($("<li value=\"" + games[game].id + "\"> " + games[game].name + " </li>"));
+function fillGameList(games){
+	for(var i = 0; i < 10; i++){
+		var game = selectGame(games);
+		$('#gamelist').append($("<li onclick=playGame('" + game.url + "') > " + game.name + " </li>"));
 	}
-	
-	
-	//$('#app_content').append($("</ul>"));
 }
 
 function playRound(url) {
