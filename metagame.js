@@ -193,8 +193,9 @@ function loadGame(name) {
 
 function newGameButton() {
     $('#app_content').empty()
-            .append($('<div><button>Choose New Game</button></div>').click(fillGameList))
-            .append($('<div><button>About</button></div>').click(function(){alert('By Roy McElmurry, Erik Nelson, Eric Spishak for Google hangout Hackathon 2012');}));
+            .append($('<div><button>Choose Next Round</button></div>').click(fillGameList))
+            .append($('<a id="about_popup" href="#about_div">Help/About</a>'));
+    $("a#about_popup").fancybox({'width': 600, 'height': 400, 'autoDimensions': false});
 }
 
 function playRound(game) {
@@ -258,12 +259,12 @@ function getGames(cb) {
     if (GAMES_LIST) {
         cb(GAMES_LIST);
     } else {
-        var offset = parseInt(Math.random() * 1000);
+        var offset = parseInt(Math.random() * 1800);
         $.ajax({
             'url': MOCHI_GAME_SERVICE,
-            'data': {'q': '(((((not category:puzzles) and leaderboard_enabled) and not category:jigsaw) and width:<=575) or height:<=450)',
-                     'limit': '100',
-                     'offset': offset
+            'data': {'q': '(((((not category:puzzles) and leaderboard_enabled) and not category:jigsaw) and width:<=575) and height:<=450)',
+                     'limit': '200',
+                     'offset': '' + offset
             },
             'dataType': 'jsonp',
             'success': function(data, textStatus, crap) {

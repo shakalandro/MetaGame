@@ -5,6 +5,9 @@
     margin: auto;
     overflow: hidden;
     position: relative;
+}
+
+div, p, button {
     font-family: "Cabin Sketch", sans-serif;
 }
 
@@ -62,6 +65,11 @@ button {
     white-space: nowrap;
 }
 
+#gamelist li:hover {
+    cursor: pointer;
+    color: red;
+}
+
 #scores_list {
     margin-left: 10px;
     overflow: hidden;
@@ -87,4 +95,15 @@ h1 {
     clear: both;
     overflow: hidden;
     margin-bottom: 5px;
+}
+
+a#about_popup {
+    text-decoration: none;
+    color: black;
+    display: block;
+    margin-bottom: 15px;
+}
+
+a#about_popup:visited {
+    color: black;
 }
