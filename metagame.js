@@ -69,6 +69,7 @@ function gameOver(winner, gameScores) {
 function startApp() {
     initBridge();
     setMyScore(0);
+    
     var topHat = gapi.hangout.av.effects.createImageResource('http://hangoutmediastarter.appspot.com/static/topHat.png');
     topHatOverlay = topHat.createFaceTrackingOverlay(
 						     {'trackingFeature':
@@ -201,7 +202,7 @@ function playRound(game) {
 }
 
 function initBridge() {
-    var options = {partnerID: "555182a0d6a484d6", id: "leaderboard_bridge"};
+    var options = {partnerID: "2d828d02099b26a8", id: "leaderboard_bridge"};
     options.callback = scoreCallback;
     var id = gapi.hangout.getParticipantId();
     options.sessionID = id;

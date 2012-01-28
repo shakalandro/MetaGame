@@ -4,6 +4,7 @@
     border: 5px solid black;
     margin: auto;
     overflow: hidden;
+    position: relative;
 }
 
 #app_body p {
