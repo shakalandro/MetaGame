@@ -28,36 +28,24 @@ function startApp() {
     var game = gapi.hangout.data.getValue('game');
     if (!game) {
         $('#app_content').append($("<h1 id='header'> META GAME </h1>"));
-		fillGameList();
-        $('#app_content').append($('<button>Play Game</button>').click(function() {
-            getGames(function(games) {
-                var g = selectGame(games);
-                console.log(games, g);
-                gapi.hangout.data.setValue('game', g.url);
-                playGame(g);
-            });
-        }));
+		$('#app_content').append($("<ul id='gamelist'></ul>"));
+		getGames(function(games) {
+					fillGameList(games);
+		});
     } else {
         playGame(game);
     }
 }
 
-function fillGameList(){
-	$('#app_content').append($("<ul id='gamelist'></ul>"));
-	//var games = import game list
-	//Adjust for styling of games list
-	var games = {0:{'name':"World of Warcraft", 'id':"00001001"}, 1:{'name':"Batman Returns", 'id':"001232"}};
-	var game;
-	for(game in games){
-		$('#gamelist').append($("<li value=\"" + games[game].id + "\"> " + games[game].name + " </li>"));
+function fillGameList(games){
+	for(var i = 0; i < 10; i++){
+		var game = selectGame(games);
+		$('#gamelist').append($("<li onclick=playGame('" + game.url + "') > " + game.name + " </li>"));
 	}
-	
-	
-	//$('#app_content').append($("</ul>"));
 }
 
 function playGame(game){
-    $('#app_content').empty();
+	$('#app_content').empty();
     embedGame(game);
 }
 
@@ -93,7 +81,7 @@ Calls cb with a list of lists in the following format:
 function getGames(cb) {
     $.ajax({
 	    'url': MOCHI_GAME_SERVICE,
-	    'data': {'q': 'leaderboard_enabled', 'limit': '100'},
+	    'data': {'q': 'leaderboard_enabled', 'limit': '1000'},
 	    'dataType': 'jsonp',
        	    'success': function(data, textStatus, crap) {
 		var res = [];

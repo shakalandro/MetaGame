@@ -2,6 +2,7 @@
     height: 98%;
     width: 99%;
     border: 5px solid black;
+	font-style: Arial;
 }
 
 #game {
@@ -9,4 +10,8 @@
     width: 720;
     height: 480;
     border: 3px solid red;
+}
+
+#app_body ul {
+	list-style-type: square;
 }
