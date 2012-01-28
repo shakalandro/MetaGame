@@ -14,7 +14,7 @@ gapi.hangout.onApiReady.add(function(eventObj){
             $.each(event.addedKeys, function(idx, entry) {
                 console.log('event key: ', entry.key, entry.value);
                 if (entry.key == 'game') {
-                    playRound(entry.value);
+                    playRound(JSON.parse(entry.value));
                 } else if (entry.key == 'scores') {
                     buildScoresPane();
                 } else if (entry.key == 'gameScores') {
@@ -70,7 +70,7 @@ function startApp() {
 						      'rotateWithFace': true,
 						      'scale': 1.0
 						     });
-    var game = gapi.hangout.data.getValue('game');
+    var game = JSON.parse(gapi.hangout.data.getValue('game'));
     console.log('Game is: ', game);
     $('#scores_pane').hide();
     if (!game) {
@@ -163,7 +163,7 @@ function fillGameList() {
     getGames(function(games) {
         for(var i = 0; i < 10; i++){
             var game = selectGame(games);
-            $('#gamelist').append($("<li onclick=\"gapi.hangout.data.setValue('gameScores', '{}');gapi.hangout.data.setValue('game', '" + game.url + "'); playRound('" + game.url + "');\" > " + game.name + " </li>"));
+            $('#gamelist').append($("<li onclick=\"gapi.hangout.data.setValue('gameScores', '{}');gapi.hangout.data.setValue('game', " + JSON.stringify(game) + "); playRound('" + game + "');\" > " + game.name + " </li>"));
         }
     });
 }
@@ -174,11 +174,11 @@ function newGameButton() {
             .append($('<button>About</button>'));
 }
 
-function playRound(url) {
+function playRound(game) {
     $('#app_content').empty();
     $('#scores_pane').show();
     buildScoresPane();
-    embedGame(url);
+    embedGame(game.url, game.width, game.height);
 }
 
 function initBridge() {
@@ -198,7 +198,7 @@ function selectGame(game_options) {
 }
 
 function embedGame(url) {
-    url = 'http://games.mochiads.com/c/g/highway-traveling/Highway.swf';
+    //url = 'http://games.mochiads.com/c/g/highway-traveling/Highway.swf';
     console.log('Playing game: ', url);
     swfobject.embedSWF(url, "game", "600", "400", "9.0.0");
     setTimeout(function() {
@@ -238,7 +238,7 @@ function getGames(cb) {
             'success': function(data, textStatus, crap) {
                 GAMES_LIST = [];
                 $.each(data.games, function(idx, value) {
-                    GAMES_LIST.push({'name': value.name, 'url': value.swf_url});
+                    GAMES_LIST.push({'name': value.name, 'url': value.swf_url, 'width': value.width, 'height': value.height});
                 });
                 cb(GAMES_LIST);
             },
