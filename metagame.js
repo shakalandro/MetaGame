@@ -30,7 +30,7 @@ function startApp() {
     var game = gapi.hangout.data.getValue('game');
     if (!game) {
         $('#app_content').append($("<h1 id='header'> META GAME </h1>"));
-
+		fillGameList();
         $('#app_content').append($('<button>Play Game</button>').click(function() {
             getGames(function(games) {
                 var g = selectGame(games);
@@ -89,6 +89,20 @@ function buildScoresPane() {
         var name = gapi.hangout.getParticipantById(key).person.displayName;
         list.append($('<li></li>').text(name + ': ' + value));
     });
+}
+
+function fillGameList(){
+	$('#app_content').append($("<ul id='gamelist'></ul>"));
+	//var games = import game list
+	//Adjust for styling of games list
+	var games = {0:{'name':"World of Warcraft", 'id':"00001001"}, 1:{'name':"Batman Returns", 'id':"001232"}};
+	var game;
+	for(game in games){
+		$('#gamelist').append($("<li value=\"" + games[game].id + "\"> " + games[game].name + " </li>"));
+	}
+	
+	
+	//$('#app_content').append($("</ul>"));
 }
 
 function playGame(game){
